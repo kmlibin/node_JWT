@@ -1,12 +1,12 @@
 const jwt = require("jsonwebtoken");
-const CustomAPIError = require("../errors/custom-error");
+const {UnauthenticatedError} = require("../errors");
 
 //add to routes
 const authenticationMiddleware = async (req, res, next) => {
   //grab token from frontend, check it's there
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    throw new CustomAPIError("no token", 401);
+    throw new UnauthenticatedError("no token");
   }
   //remember, it's Bearer tokengoeshere. So, [0] returns Bearer, [1] returns the token
   const token = authHeader.split(" ")[1];
@@ -20,7 +20,7 @@ const authenticationMiddleware = async (req, res, next) => {
     req.user = { id, username };
     next();
   } catch (error) {
-    throw new CustomAPIError("not authorized to access route", 401);
+    throw new UnauthenticatedError("not authorized to access route");
   }
 };
 module.exports = authenticationMiddleware;
